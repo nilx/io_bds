@@ -21,6 +21,7 @@
  */
 
 #include <stdlib.h>
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -42,6 +43,14 @@ char *io_bin_info(void)
 /** @brief abort() wrapper macro with an error message */
 #define _IO_BIN_ABORT(MSG) do {                                 \
     fprintf(stderr, "%s:%04u : %s\n", __FILE__, __LINE__, MSG); \
+    fflush(stderr);                                             \
+    abort();                                                    \
+    } while (0);
+
+/** @brief abort() wrapper macro plus the system error */
+#define _IO_BIN_ABORT_ERR(MSG) do {                             \
+    fprintf(stderr, "%s:%04u : %s : %s\n",                      \
+            __FILE__, __LINE__, MSG, strerror(errno));          \
     fflush(stderr);                                             \
     abort();                                                    \
     } while (0);
@@ -84,19 +93,24 @@ float *io_bin_read_flt(const char *fname,
 
     if (0 == strcmp(fname, "-"))
         fp = stdin;
-    else if (NULL == (fp = fopen(fname, "rb")))
-        _IO_BIN_ABORT("failed to open file");
+    else {
+        fprintf(stderr,
+                "Warning: binary format is not safe for file storage.\n");
+        if (NULL == (fp = fopen(fname, "rb")))
+            _IO_BIN_ABORT_ERR("failed to open file");
+    }
     /* get nx, ny, nc */
     if (1 != fread(&nx, sizeof(size_t), 1, fp)
         || 1 != fread(&ny, sizeof(size_t), 1, fp)
         || 1 != fread(&nc, sizeof(size_t), 1, fp))
         _IO_BIN_ABORT("read error");
+
     size = nx * ny * nc;
     /* allocate the memory */
     data = _IO_BIN_SAFE_MALLOC(size, float);
     /* read the data */
     if (size != fread(data, sizeof(float), size, fp))
-        _IO_BIN_ABORT("read error");
+        _IO_BIN_ABORT_ERR("read error");
 
     if (stdin != fp)
         (void) fclose(fp);
@@ -128,17 +142,22 @@ void io_bin_write_flt(const char *fname, const float *data,
 
     if (0 == strcmp(fname, "-"))
         fp = stdout;
-    else if (NULL == (fp = fopen(fname, "wb")))
-        _IO_BIN_ABORT("failed to open file");
+    else {
+        fprintf(stderr,
+                "Warning: binary format is not safe for file storage.\n");
+        if (NULL == (fp = fopen(fname, "wb")))
+            _IO_BIN_ABORT_ERR("failed to open file");
+    }
     /* put nx, ny, nc */
-    if (1 != fwrite(&nx, sizeof(size_t), 1, fp)
-        || fwrite(&ny, sizeof(size_t), 1, fp)
-        || fwrite(&nc, sizeof(size_t), 1, fp))
-        _IO_BIN_ABORT("write error");
+    if (1 != fwrite((void *) &nx, sizeof(size_t), 1, fp)
+        || 1 != fwrite((void *) &ny, sizeof(size_t), 1, fp)
+        || 1 != fwrite((void *) &nc, sizeof(size_t), 1, fp))
+        _IO_BIN_ABORT_ERR("write error");
+
     size = nx * ny * nc;
     /* write the data */
     if (size != fwrite(data, sizeof(float), size, fp))
-        _IO_BIN_ABORT("write error");
+        _IO_BIN_ABORT_ERR("write error");
 
     if (stdout != fp)
         (void) fclose(fp);

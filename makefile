@@ -6,7 +6,7 @@
 # offered as-is, without any warranty.
 
 # source code
-SRC	= io_bin.c
+SRC	= io_bin.c example/make_bin.c example/show_bin.c
 # object files (partial compilation)
 OBJ	= $(SRC:.c=.o)
 # binary executable programs
@@ -18,8 +18,6 @@ COPT	= -O3 -DNDEBUG
 CFLAGS	= -ansi -pedantic -Wall -Wextra -Werror -pipe $(COPT)
 # linker options
 LDFLAGS	= -lm
-# library build dependencies (none)
-LIBDEPS =
 
 # default target: the example programs
 default: $(BIN)
@@ -29,8 +27,8 @@ default: $(BIN)
 	$(CC) $< -c $(CFLAGS) -I. -o $@
 
 # final link of an example program
-example/%	: example/%.o io_png.o $(LIBDEPS)
-	$(CC) $< io_png.o $(LDFLAGS) -o $@
+example/%	: example/%.o io_bin.o
+	$(CC) $^ $(LDFLAGS) -o $@
 
 # cleanup
 .PHONY	: clean distclean
