@@ -6,14 +6,14 @@
 # offered as-is, without any warranty.
 
 # source code
-SRC	= io_dump.c
+SRC	= io_bin.c
 # object files (partial compilation)
 OBJ	= $(SRC:.c=.o)
 # binary executable programs
 BIN	= $(filter example/%, $(SRC:.c=))
 
 # standard C compiler optimization options
-COPT	= -O3 -DNDEBUG -funroll-loops -fomit-frame-pointer
+COPT	= -O3 -DNDEBUG
 # complete C compiler options
 CFLAGS	= -ansi -pedantic -Wall -Wextra -Werror -pipe $(COPT)
 # linker options
@@ -43,7 +43,7 @@ distclean	: clean
 ################################################
 # extra tasks
 
-PROJECT	= io_dump
+PROJECT	= io_bin
 DATE	= $(shell date -u +%Y%m%d)
 RELEASE_TAG   = 0.$(DATE)
 

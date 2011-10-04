@@ -1,0 +1,6 @@
+/**
+ * @mainpage io_bin: simplest image io interface
+ *
+ * README.txt:
+ * @verbinclude README.txt
+ */
