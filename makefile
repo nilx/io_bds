@@ -13,9 +13,11 @@ OBJ	= $(SRC:.c=.o)
 BIN	= $(filter example/%, $(SRC:.c=))
 
 # standard C compiler optimization options
-COPT	= -O3 -DNDEBUG
+COPT	= -O3
 # complete C compiler options
 CFLAGS	= -ansi -pedantic -Wall -Wextra -Werror -pipe $(COPT)
+# preprocessor options
+CPPFLAGS	= -I. -DNDEBUG
 # linker options
 LDFLAGS	= -lm
 
@@ -23,8 +25,8 @@ LDFLAGS	= -lm
 default: $(BIN)
 
 # partial C compilation xxx.c -> xxx.o
-%.o	: %.c $(LIBDEPS)
-	$(CC) $< -c $(CFLAGS) -I. -o $@
+%.o	: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 # final link of an example program
 example/%	: example/%.o io_bin.o
