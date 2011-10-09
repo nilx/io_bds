@@ -12,10 +12,10 @@ OBJ	= $(SRC:.c=.o)
 # binary executable programs
 BIN	= $(filter example/%, $(SRC:.c=))
 
-# standard C compiler optimization options
+# C compiler optimization options
 COPT	= -O3
 # complete C compiler options
-CFLAGS	= -ansi -pedantic -Wall -Wextra -Werror -pipe $(COPT)
+CFLAGS	= $(COPT)
 # preprocessor options
 CPPFLAGS	= -I. -DNDEBUG
 # linker options
