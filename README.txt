@@ -16,6 +16,28 @@ Is has the lowest possible overhead, but is not portable across
 machines. This data format is only a simplistic dump for local
 exchange via unix pipes or similar transports. 
 
+ACHTUNG!!
+DAS IST NICHT EIN FILE FORMAT ...
+
+This is not yet-another-image-file-format! Image processing is plagued
+with ill-defined and poorly documented useless custom file
+formats. This is just a set of routines to transfer some simple data
+between processes without encoding/decoding overhead because the
+(de)compression cost of PNG or TIFF files is significant when a
+program is only doing a quick image transformation.
+
+Using this to read and write image files *will* end with some
+portability and maintenance problems. There *will* be problems with
+byte-endianness and type width. I won't fix anything unless it affects
+me and I have nothing else to do. Be kind with your computer, for your
+image *file* needs use safe and clean image *file* formats, like PNG
+or TIFF.
+
+On the other hand, if you *only* need to send some data to stdout and
+receive it from stdin, io_bin should be just fine.
+
+... ZO RELAXEN UND STREAMEN DER BLINKENBYTES.
+
 # LICENSE
 
 io_bin.c is distributed under a GPL3+ or BSD license, at your
@@ -92,6 +114,10 @@ See the example folder.
 
 * cmake support
 * C++ wrappers (vector output, merged functions)
+
+# REFERENCES
+
+Blinkenlights. http://www.catb.org/~esr/jargon/html/B/blinkenlights.html
 
 # COPYRIGHT
 
