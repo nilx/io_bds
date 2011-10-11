@@ -24,8 +24,6 @@ LDFLAGS	= -lm
 # default target: the example programs
 default: $(BIN)
 
-# specific dependencies
-io_bds.o	: debug.h
 # partial C compilation xxx.c -> xxx.o
 %.o	: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
