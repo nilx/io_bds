@@ -159,7 +159,7 @@ static size_t ndigits(size_t n)
  * @brief fixed BDS signature
  *
  * The BDS signature is made of 12 bytes: a 8 byte signature base
- * similar to the PNG signature and a 4 byte ASCII version info.
+ * similar to the PNG signature and a 4 byte version info.
  * Whenever the ABI changes, the version info is incremented.
  */
 static const char _io_bds_sig[_IO_BDS_SIG_LEN] = {
@@ -175,7 +175,7 @@ static const char _io_bds_sig[_IO_BDS_SIG_LEN] = {
  * Reuse the clever PNG signature base, ...
  * http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html
  */
-    '0', '0', '0', '1'
+    '0', '0', '0', '2'
 /*  ------------------
  *   |
  *  ABI version (human readable ASCII)
@@ -214,13 +214,15 @@ static void _io_bds_write_sig(FILE * fp)
 /**
  * @brief build the BDS header
  *
- * The header is a string with the data type info and 3 dimensions,
- * space-padded to 52 bytes. Currently, the data type info can only be
- * "flt" for floats.
+ * The header is a 52 byte string with the data type info and 3
+ * dimensions. The string must be correcly terminated by the null
+ * character (in the 52 bytes) and its content readable with a
+ * C scanf() function using the formatting string "%s%lu%lu%lu".
  *
- * There is no point using the full C type names since this string
- * won't be processed as a C code fragment and unsigned types would
- * require two words, so we use abbreviations. "std" is the standard C
+ * Currently, the data type info can only be "flt" for floats. There
+ * is no point using the full C type names since this string won't be
+ * processed as a C code fragment and unsigned types would require two
+ * words, so we use compact abbreviations. "flt" is the standard C
  * abbreviation for floats (see float.h macros).
  *
  * The header length is sufficient for 3x 2**32 dimensions; the
@@ -235,17 +237,26 @@ static char *_io_bds_hdr(size_t nx, size_t ny, size_t nc)
     char *hdr;
     int len;
 
+    /* empty header fille with spaces */
     hdr = _IO_BDS_SAFE_MALLOC(_IO_BDS_HDR_LEN, char);
     memset(hdr, ' ', _IO_BDS_HDR_LEN);
-    if (strlen("flt") + 1
-        + ndigits(nx) + 1
-        + ndigits(ny) + 1 + ndigits(nc) + 1 > _IO_BDS_HDR_LEN)
+
+    /* check length */
+    if (1                       /* leading space */
+        + strlen("flt") + 1     /* "flt" data type info + space */
+        + ndigits(nx) + 1 + ndigits(ny) + 1 + ndigits(nc)
+        + 1                     /* ending '\0' */
+        > _IO_BDS_HDR_LEN)
         _IO_BDS_ABORT("array dimensions too large for the header format");
-    /* inhibit splint, checked for overflow */
+
+    /* inhibit splint, already checked for overflow */
     /*@-bufferoverflowhigh@ */
-    len = sprintf(hdr, "flt %lu %lu %lu", nx, ny, nc);
+    len = sprintf(hdr, " %s %lu %lu %lu", "flt", nx, ny, nc);
     /*@=bufferoverflowhigh@ */
+
+    /* terminate at the end of the string */
     hdr[len] = ' ';
+    hdr[_IO_BDS_HDR_LEN - 1] = '\0';
     return hdr;
 }
 
@@ -253,15 +264,20 @@ static char *_io_bds_hdr(size_t nx, size_t ny, size_t nc)
 static void _io_bds_read_hdr(size_t * nxp, size_t * nyp, size_t * ncp,
                              FILE * fp)
 {
-    char hdr[_IO_BDS_HDR_LEN + 1];
+    char hdr[_IO_BDS_HDR_LEN];
+    char dtype[_IO_BDS_HDR_LEN];
     unsigned long nx, ny, nc;
 
     if (_IO_BDS_HDR_LEN != fread(&hdr, sizeof(char), _IO_BDS_HDR_LEN, fp))
         _IO_BDS_ABORT_ERR("read error");
-    hdr[_IO_BDS_HDR_LEN] = '\0';
 
-    if (3 != sscanf(hdr, "flt%lu%lu%lu", &nx, &ny, &nc))
+    /* ensure correct termination */
+    hdr[_IO_BDS_HDR_LEN - 1] = '\0';
+
+    if (4 != sscanf(hdr, "%s%lu%lu%lu", dtype, &nx, &ny, &nc))
         _IO_BDS_ABORT("wrong header in this data stream");
+    if (0 != strcmp("flt", dtype))
+        _IO_BDS_ABORT("unsupported data type in this data stream");
 
     *nxp = (size_t) nx;
     *nyp = (size_t) ny;
@@ -281,6 +297,24 @@ static void _io_bds_write_hdr(size_t nx, size_t ny, size_t nc, FILE * fp)
     free(hdr);
     return;
 }
+
+/*
+ * A 7x5x3 float array stream starts with these 64 bytes:
+ *
+ * 00000  89 42 44 53 0d 0a 1a 0a  30 30 30 32 20 66 6c 74  |.BDS....0002 flt|
+ * 00010  20 37 20 35 20 33 20 20  20 20 20 20 20 20 20 20  | 7 5 3          |
+ * 00020  20 20 20 20 20 20 20 20  20 20 20 20 20 20 20 20  |                |
+ * 00030  20 20 20 20 20 20 20 20  20 20 20 20 20 20 20 00  |               .|
+ *
+ * Note that the header part is flexible and only contrained by scanf()
+ * readability. The following variants with more or less spaces are
+ * valid too:
+ *
+ * |.BDS....0002 flt 7 5 3                                         .|
+ * |.BDS....0002 flt 7 5 3..........................................|
+ * |.BDS....0002flt 7 5 3                                          .|
+ * |.BDS....0002    flt    7    5    3                             .|
+ */
 
 /*
  * READ
