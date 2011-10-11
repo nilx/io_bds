@@ -52,6 +52,9 @@ char *io_bds_info(void)
     return _io_bds_tag;
 }
 
+#define _IO_BDS_FILE_WARNING \
+    "Warning: binary data stream format is not safe for file storage."
+
 /*
  * UTILS
  */
@@ -309,10 +312,9 @@ float *io_bds_read_flt(const char *fname,
 #endif
     }
     else {
-        fprintf(stderr,
-                "Warning: binary format is not safe for file storage.\n");
         if (NULL == (fp = fopen(fname, "rb")))
             _IO_BDS_ABORT_ERR("failed to open file");
+        fputs(_IO_BDS_FILE_WARNING, stderr);
     }
     setbuf(fp, NULL);
 
@@ -363,10 +365,9 @@ void io_bds_write_flt(const char *fname, const float *data,
 #endif
     }
     else {
-        fprintf(stderr,
-                "Warning: binary format is not safe for file storage.\n");
         if (NULL == (fp = fopen(fname, "wb")))
             _IO_BDS_ABORT_ERR("failed to open file");
+        fputs(_IO_BDS_FILE_WARNING, stderr);
     }
     /* write the signature and header */
     _io_bds_write_sig(fp);
