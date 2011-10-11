@@ -1,5 +1,5 @@
 /*
- * This file shows how to use io_bin.c. It is released in the public
+ * This file shows how to use io_bds.c. It is released in the public
  * domain and as such comes with no copyright requirement.
  */
 
@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <assert.h>
 
-/* include the io_bin prototypes */
-#include "io_bin.h"
+/* include the io_bds prototypes */
+#include "io_bds.h"
 
 int main(int argc, char **argv)
 {
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 
     /* the image size is read from the command-line */
     if (5 > argc) {
-        fprintf(stderr, "syntax: %s nx ny nc out.bin\n", argv[0]);
+        fprintf(stderr, "syntax: %s nx ny nc out.bds\n", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
         img[i] = (float) i *(float) i;
 
     /* write the float array */
-    io_bin_write_flt(argv[4], img, nx, ny, nc);
+    io_bds_write_flt(argv[4], img, nx, ny, nc);
 
     free(img);
 

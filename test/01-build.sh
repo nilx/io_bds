@@ -6,7 +6,7 @@
 # known image, lena. The expected output is in the data folder.
 _test_run() {
     TEMPFILE=$(tempfile)
-    ./example/make_bin 7 5 3 - | ./example/show_bin - > $TEMPFILE
+    ./example/make_bds 7 5 3 - | ./example/show_bds - > $TEMPFILE
     dos2unix $TEMPFILE #when compiled with mingw
     test "6ce1aceadc9ac31e8e1a472750d766b2  $TEMPFILE" \
 	= "$(md5sum $TEMPFILE)"
@@ -27,17 +27,12 @@ _log make clean
 _log make
 
 echo "* compiler support"
-for CC in cc c++ c99 gcc g++ tcc nwcc clang icc pathcc suncc \
+for CC in cc c++ c89 c99 gcc g++ tcc nwcc clang icc pathcc suncc \
     i586-mingw32msvc-cc; do
     which $CC || continue
     echo "* $CC compiler"
     _log make distclean
-    case $CC in
-	"gcc"|"g++")
-	    _log make CC=$CC ;;
-	*)
-	    _log make CC=$CC CFLAGS= ;;
-    esac
+    _log make CC=$CC
     _log _test_run
 done
 

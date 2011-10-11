@@ -1,5 +1,5 @@
 /*
- * This file shows how to use io_bin.c. It is released in the public
+ * This file shows how to use io_bds.c. It is released in the public
  * domain and as such comes with no copyright requirement.
  */
 
@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <assert.h>
 
-/* include the io_bin prototypes */
-#include "io_bin.h"
+/* include the io_bds prototypes */
+#include "io_bds.h"
 
 int main(int argc, char **argv)
 {
@@ -26,12 +26,12 @@ int main(int argc, char **argv)
 
     /* the file to read is given as the first command-line argument */
     if (2 > argc) {
-        fprintf(stderr, "syntax: %s in.bin\n", argv[0]);
+        fprintf(stderr, "syntax: %s in.bds\n", argv[0]);
         return EXIT_FAILURE;
     }
 
     /* read the image info a float array */
-    img = io_bin_read_flt(argv[1], &nx, &ny, &nc);
+    img = io_bds_read_flt(argv[1], &nx, &ny, &nc);
 
     /* nx, ny and nc hold the image sizes */
     printf("image file: %s\n", argv[1]);

@@ -1,5 +1,5 @@
 /**
- * @mainpage io_bin: simplest image io interface
+ * @mainpage io_bds: binary data stream tools
  *
  * README.txt:
  * @verbinclude README.txt

@@ -14,8 +14,8 @@ echo "* check memory leaks"
 TEMPFILE=$(tempfile)
 _log make distclean
 _log make
-_log _test_memcheck example/make_bin 7 5 3 $TEMPFILE
-_log _test_memcheck example/show_bin $TEMPFILE
+_log _test_memcheck example/make_bds 7 5 3 $TEMPFILE
+_log _test_memcheck example/show_bds $TEMPFILE
 _log rm -f $TEMPFILE
 _log make distclean
 

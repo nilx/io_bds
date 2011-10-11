@@ -6,7 +6,7 @@
 # offered as-is, without any warranty.
 
 # source code
-SRC	= io_bin.c example/make_bin.c example/show_bin.c
+SRC	= io_bds.c example/make_bds.c example/show_bds.c
 # object files (partial compilation)
 OBJ	= $(SRC:.c=.o)
 # binary executable programs
@@ -29,7 +29,7 @@ default: $(BIN)
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 # final link of an example program
-example/%	: example/%.o io_bin.o
+example/%	: example/%.o io_bds.o
 	$(CC) $^ $(LDFLAGS) -o $@
 
 # cleanup
@@ -42,5 +42,5 @@ distclean	: clean
 
 ################################################
 # dev tasks
-PROJECT	= io_bin
+PROJECT	= io_bds
 -include	makefile.dev
