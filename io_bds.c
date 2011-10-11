@@ -32,7 +32,10 @@
 #ifndef WIN32
 #define WIN32
 #endif
-/* required for Windows stream handling */
+/*
+ * On windows systems, the streams mist be reset to binary mode with
+ * setmode() to avoid CRLF translation and other nasty side-effects.
+ */
 #include <io.h>
 #include <fcntl.h>
 #endif
@@ -303,11 +306,7 @@ float *io_bds_read_flt(const char *fname,
 
     if (0 == strcmp(fname, "-")) {
         fp = stdin;
-#ifdef WIN32
-        /*
-         * Reset the stream to binary mode. This is required in Windows to
-         * avoid CRLF translation and other nasty side-effects.
-         */
+#ifdef WIN32                    /* set the stream to binary mode */
         setmode(fileno(fp), O_BINARY);
 #endif
     }
@@ -333,7 +332,7 @@ float *io_bds_read_flt(const char *fname,
     *nxp = nx;
     *nyp = ny;
     *ncp = nc;
-   return data;
+    return data;
 }
 
 /*
@@ -356,11 +355,7 @@ void io_bds_write_flt(const char *fname, const float *data,
 
     if (0 == strcmp(fname, "-")) {
         fp = stdout;
-#ifdef WIN32
-        /*
-         * Reset the stream to binary mode. This is required in Windows to
-         * avoid CRLF translation and other nasty side-effects.
-         */
+#ifdef WIN32                    /* set the stream to binary mode */
         setmode(fileno(fp), O_BINARY);
 #endif
     }
