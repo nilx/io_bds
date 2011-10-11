@@ -163,11 +163,11 @@ static size_t ndigits(size_t n)
  * Whenever the ABI changes, the version info is incremented.
  */
 static const char _io_bds_sig[_IO_BDS_SIG_LEN] = {
-    '\211', 'B', 'D', 'S', '\015', '\012', '\032', '\012',
-/*  ------  -------------  --------------  ------  ------
- *   |       |              |               |       |
- *   |       |              |               |      detect CRLF translations
- *   |       |              |              DOS end of file
+    '\211', 'B', 'D', 'S', '\r', '\n', '\032', '\n',
+/*  ------  -------------  ----------  ------  ----
+ *   |       |              |           |       |
+ *   |       |              |           |      detect CRLF translations
+ *   |       |              |          DOS end of file
  *   |       |             detect CRLF translations
  *   |      BDS marker (human readable ASCII)
  *  detect 8-bit mangling, non-text content
