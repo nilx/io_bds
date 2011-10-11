@@ -46,8 +46,9 @@ and clean image *file* formats like PNG or TIFF for your image *file*
 needs.
 
 On the other hand, if you *only* need to send some data to stdout and
-receive it from stdin, io_bds should be just fine, and I'll be happy
-to receive your suggestions and patches.
+receive it from stdin, io_bds should be just fine. In that case,
+io_bds is automagically and by design immune to byte-endianness and
+type portability problems.
 
 ... ZO RELAXEN UND STREAMEN DER BLINKENBYTES.
 
