@@ -37,6 +37,9 @@
 #include <fcntl.h>
 #endif
 
+/* CPU time measurement */
+#include "debug.h"
+
 /* ensure consistency */
 #include "io_bds.h"
 
@@ -53,7 +56,7 @@ char *io_bds_info(void)
 }
 
 #define _IO_BDS_FILE_WARNING \
-    "Warning: binary data stream format is not safe for file storage."
+    "Warning: binary data stream format is not safe for file storage.\n"
 
 /*
  * UTILS
@@ -301,6 +304,7 @@ float *io_bds_read_flt(const char *fname,
     size_t nx, ny, nc;
     size_t size;
 
+    DBG_CLOCK_START(0);
     if (0 == strcmp(fname, "-")) {
         fp = stdin;
 #ifdef WIN32
@@ -333,6 +337,8 @@ float *io_bds_read_flt(const char *fname,
     *nxp = nx;
     *nyp = ny;
     *ncp = nc;
+    DBG_CLOCK_TOGGLE(0);
+    DBG_PRINTF1("CPU time in io_bds_read_flt(): %0.3fs\n", DBG_CLOCK_S(0));
     return data;
 }
 
@@ -354,6 +360,7 @@ void io_bds_write_flt(const char *fname, const float *data,
     FILE *fp;
     size_t size;
 
+    DBG_CLOCK_START(0);
     if (0 == strcmp(fname, "-")) {
         fp = stdout;
 #ifdef WIN32
@@ -380,5 +387,8 @@ void io_bds_write_flt(const char *fname, const float *data,
 
     if (stdout != fp)
         (void) fclose(fp);
+
+    DBG_CLOCK_TOGGLE(0);
+    DBG_PRINTF1("CPU time in io_bds_write_flt(): %0.3fs\n", DBG_CLOCK_S(0));
     return;
 }
