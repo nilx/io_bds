@@ -71,7 +71,7 @@ char *io_bds_info(void)
 
 /** @brief abort() wrapper macro plus the system error */
 #define _IO_BDS_ABORT_ERR(MSG) do {                             \
-    fprintf(stderr, "%s:%04u : %s : %s\n",                      \
+    fprintf(stderr, "%s:%04u : %s\nsystem message : %s\n",      \
             __FILE__, __LINE__, MSG, strerror(errno));          \
     fflush(NULL);                                               \
     abort();                                                    \
