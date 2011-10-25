@@ -1,0 +1,3 @@
+io_bds.o: io_bds.c io_bds.h
+make_bds.o: example/make_bds.c io_bds.h
+show_bds.o: example/show_bds.c io_bds.h
