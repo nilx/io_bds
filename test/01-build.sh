@@ -32,7 +32,15 @@ for CC in cc c++ c89 c99 gcc g++ tcc nwcc clang icc pathcc suncc \
     which $CC || continue
     echo "* $CC compiler"
     _log make distclean
-    _log make CC=$CC
+    case $CC in
+	"dmc") # inter-processs pipes are broken when running via wine
+	    _log make -f makefile.dmc
+	    _log make -f makefile.dmc clean
+	    ;;
+	*)
+	    _log make CC=$CC
+	    ;;
+    esac
     _log _test_run
 done
 

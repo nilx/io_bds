@@ -1,0 +1,22 @@
+# -*- makefile -*-
+# Copyright 2010 Nicolas Limare <nicolas.limare@cmla.ens-cachan.fr>
+#
+# Copying and distribution of this file, with or without
+# modification, are permitted in any medium without royalty provided
+# the copyright notice and this notice are preserved.  This file is
+# offered as-is, without any warranty.
+
+# get the base makefile
+-include makefile
+
+# fix for dmc syntax
+CC	= dmc
+COPT	=
+
+example/%	: example/%.c io_bds.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) \
+		-o$(subst /,\\,$@) $(subst /,\\,$^) $(LDLIBS)
+	mv $@.exe $@
+
+clean	:
+	$(RM) *.map *.obj
